@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/milligram.css') }}">
+  <title>My AI Bot</title>
+</head>
+
+<body>
+  <h3>My AI Bot</h3>
+  <form action="/activities" method="GET">
+    <input type="submit" value="See games">
+  </form>
+  {% if outputGames %}
+  <nobr><label for="outputGames">Game List:</label>
+    <div>{{ outputGames }}</div>
+  </nobr>
+  {% endif %}
+  <form action="/activities/search" method="POST">
+    <label for="input">New Game:</label>
+    <!-- switching to textarea for wider input -->
+    <textarea placeholder="Add Your Game" name="input"></textarea>
+    <br>
+    <input type="submit" value="Add Game">
+  </form>
+  {% if outputGamePrompt %}
+  <nobr><label for="outputGamePrompt">Prompt Response:</label>
+    <div>{{ outputGamePrompt }}</div>
+  </nobr>
+  {% endif %}
+  <form action="/chat" method="POST">
+    <label for="prompt">Game Prompt:</label>
+    <textarea placeholder="Add Your Game Prompt" name="prompt"></textarea>
+    <br>
+    <input type="submit" value="Game prompt">
+  </form>
+  {% if outputChatGuid %}
+  <nobr><label for="outputChatGuid">Chat Guid:</label>
+    <div>{{ outputChatGuid }}</div>
+  </nobr>
+  {% endif %}
+  {% if outputChatContent %}
+  <nobr><label for="outputChatContent">Chat Content:</label>
+    <div>{{ outputChatContent }}</div>
+  </nobr>
+  {% endif %}
+  {% if outputChatInteraction %}
+  <label for="outputChatInteraction">Chat Interaction:</label>
+  <div>{{ outputChatInteraction }}</div>
+  {% endif %}
+  <form action="/chat/guid" method="POST">
+    <label for="interaction">Game Prompt:</label>
+    <textarea placeholder="Add Your Game Interaction" name="interaction"></textarea>
+    <br>
+    <input type="submit" value="Add interaction">
+  </form>
+
+</body>
+
+</html>
