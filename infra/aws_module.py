@@ -9,7 +9,7 @@ def declare_aws_resources():
     """
     # Create a VPC
     vpc = aws.ec2.Vpc(
-        'my_vpc',
+        'my_cool_vpc',
         cidr_block='10.0.0.0/16',
         tags={
             'Name': 'my-vpc',
@@ -18,7 +18,7 @@ def declare_aws_resources():
 
     # Create a subnet
     subnet = aws.ec2.Subnet(
-        'my_subnet',
+        'my_cool_subnet',
         vpc_id=vpc.id,
         cidr_block='10.0.1.0/24',
         tags={
@@ -28,7 +28,7 @@ def declare_aws_resources():
 
     # Create a security group
     security_group = aws.ec2.SecurityGroup(
-        'my_security_group',
+        'my_cool_security_group',
         vpc_id=vpc.id,
         description='Allow SSH and HTTP',
         ingress=[
@@ -64,10 +64,10 @@ def declare_aws_resources():
     '''
 
     instance = aws.ec2.Instance(
-        'my_instance',
+        'my_cool_instance',
         instance_type=aws.ec2.InstanceType.T2_MICRO,
         # https://cloud-images.ubuntu.com/locator/ec2/
-        ami='ami-0ba499757164333f1',  # Replace with a valid AMI ID
+        ami='ami-01f519a731dd64ba7',  # Replace with a valid AMI ID, amd64/Ubuntu 22.04
         user_data=user_data,
         vpc_security_group_ids=[security_group.id],  # Replace with a valid security group ID
         subnet_id=subnet.id,  # Replace with a valid subnet ID

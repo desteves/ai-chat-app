@@ -9,14 +9,13 @@ def declare_pinecone_resources():
     """
     # Create the Pinecone index
     pinecone.PineconeIndex(
-        'games',
+        'my_cool_index',
         name='games',
         metric=pinecone.IndexMetric.COSINE,
-        dimension=1536,
         spec=pinecone.PineconeSpecArgs(
             serverless=pinecone.PineconeServerlessSpecArgs(
-                cloud=pinecone.ServerlessSpecCloud.AWS,
-                region=aws.Region.US_WEST2,
+                cloud=pinecone.ServerlessSpecCloud.AWS, # Starter Plan only supports this cloud
+                region=aws.Region.US_EAST1, # Starter Plan only supports this region
             ),
         ),
     )
