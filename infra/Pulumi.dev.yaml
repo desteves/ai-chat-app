@@ -1,0 +1,5 @@
+config:
+  aws:profile: work
+  aws:region: us-west-2
+environment:
+  - my-cool-chat-app-provider-creds

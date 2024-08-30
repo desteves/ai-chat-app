@@ -1,0 +1,4 @@
+pinecone_pulumi>=0.4.3
+pulumi>=3.130.0
+pulumi_aws>=6.50.1
+pulumi_newrelic>=5.30.0

@@ -1,0 +1,3 @@
+name: my-cool-chat-app-dev
+runtime: python
+description: A pulumi program
