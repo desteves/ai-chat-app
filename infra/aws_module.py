@@ -26,7 +26,7 @@ def declare_aws_resources():
 
     # Create a Route Table
     route_table = aws.ec2.RouteTable(
-        "my-cool-route-table",
+        "my_cool_route_table",
         vpc_id=vpc.id,
         routes=[{
             'cidr_block': "0.0.0.0/0",
@@ -90,7 +90,7 @@ def declare_aws_resources():
     user_data = f'''#!/bin/bash
 
     # Set up dependencies
-    echo "user_data script START"
+    echo "user_data script LOG START"
     curl --retry 5 --retry-delay 6 --max-time 30 http://us-west-2.ec2.archive.ubuntu.com:80
 
     sudo apt-get update -y
@@ -104,15 +104,16 @@ def declare_aws_resources():
     git clone https://github.com/desteves/ai-chat-app.git /home/ubuntu/repo
     cd /home/ubuntu/repo/app
 
-    # Set environment variables
+    # Set environment variables with Pulumi ESC
     curl -fsSL https://get.pulumi.com/esc/install.sh | sh
-    PULUMI_ACCESS_TOKEN= {pulumi_access_token}
-    export E=my-cool-chat-app-env
-    esc env open $E --format dotenv > ./web/.env
-    esc env open $E --format dotenv > ./api/.env
+    export PATH="$PATH:/.pulumi/bin"
+    export PULUMI_ACCESS_TOKEN={pulumi_access_token}
+    export PULUMI_ESC_ENV=my-cool-chat-app-env
+    esc env open $PULUMI_ESC_ENV --format dotenv > ./web/.env
+    esc env open $PULUMI_ESC_ENV --format dotenv > ./api/.env
 
     # Run Docker Compose
-    docker-compose up -d
+    docker compose up --quiet-pull
     '''
 
     instance = aws.ec2.Instance(
@@ -121,13 +122,18 @@ def declare_aws_resources():
         # https://cloud-images.ubuntu.com/locator/ec2/
         ami='ami-01f519a731dd64ba7',  # Replace with a valid AMI ID, amd64/Ubuntu 22.04
         user_data=user_data,
+        user_data_replace_on_change=True,
         vpc_security_group_ids=[security_group.id],  # Replace with a valid security group ID
         subnet_id=subnet.id,  # Replace with a valid subnet ID
         associate_public_ip_address=True,
         tags={
             'Name': 'my-cool-instance',
         },
-        opts=pulumi.ResourceOptions(depends_on=[route_table_association]),
+        # Ensure the instance is created only after the route table association is created
+        # This is to ensure that the instance can communicate with the internet
+        # thus the user_data script can successfully run
+        opts=pulumi.ResourceOptions(
+            depends_on=[route_table_association]),
     )
 
     # Export the public IP address of the instance

@@ -1,6 +1,7 @@
 version: '3'
 services:
   web:
+    image: nullstring/ai-chat-demo-web
     build: 
       context: ./web
       dockerfile: Dockerfile
@@ -20,6 +21,7 @@ services:
       # NEW_RELIC_LICENSE_KEY=123
 
   api:
+    image: nullstring/ai-chat-demo-api
     build: 
       context: ./api
       dockerfile: Dockerfile
@@ -41,6 +43,7 @@ services:
     # NEW_RELIC_LICENSE_KEY=123
 
   db:
+    image: redis:alpine3.18
     build:
       context: ./db
       dockerfile: Dockerfile
