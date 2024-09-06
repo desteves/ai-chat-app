@@ -25,13 +25,12 @@ pulumi login
 E=my-cool-chat-app-env
 pulumi env init $E --non-interactive
 pulumi env set  $E environmentVariables.NEW_RELIC_LICENSE_KEY 123ABC --secret 
+pulumi env set  $E environmentVariables.NRIA_LICENSE_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.OPENAI_API_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.PINECONE_API_KEY 123ABC --secret 
 
 # consume in N places
-pulumi env open $E --format dotenv > ./web/.env
-pulumi env open $E --format dotenv > ./api/.env
-
+pulumi env open $E --format dotenv > ../app/.env
 
 # start up a venv
 python -m venv venv
@@ -95,14 +94,14 @@ pulumi up --stack dev --yes
 Additional requirements:
 
 - Docker
-- A Pinecone index named `games` in the `default` namespace that needs to use the `text-embedding-ada-002` model
-- Update the `dashboard.json` accountIds array to include YOUR New Relic account id
-- Import the `dashboard.json` to your New Relic account
-- Create .env files as shown in the [docker-compose.yml](./app/docker-compose.yml) comments
+- A Pinecone index named `games` in the `default` namespace that needs to use the `text-embedding-ada-002` model.
+- Update the `dashboard.json` accountIds array to include YOUR New Relic account id.
+- Import the `dashboard.json` to your New Relic account.
+- Rename [app/.env.example](./app/.env.example) to `app/.env` and update the variables as shown in the [docker-compose.yml](./app/docker-compose.yml) comments.
 
 ```bash
 cd app
-docker compose up --build
+docker compose up -d
 ```
 
 ## Acknowledgements

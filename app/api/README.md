@@ -1,4 +1,4 @@
-# Chat service
+# Chat API service
 
 This app's intention is to test certain capabilities for New Relic's AI monitoring features. Its purpose is to privde a demo app that shows tracing and aggregation features along with some aspects on how to achieve comprehensive observability across your stack to maintain peak performance, ensure compliance, promote quality, and reduce costs.
 

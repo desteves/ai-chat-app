@@ -1,4 +1,3 @@
-# Build Stage
 FROM node:22-bookworm-slim
 
 WORKDIR /app
@@ -8,7 +7,5 @@ RUN npm ci
 
 COPY tsconfig.json newrelic.js ./
 COPY src/ ./src
-
-# EXPOSE 80
 
 CMD ["node", "--no-lazy", "-r", "ts-node/register", "-r", "newrelic", "--preserve-symlinks", "./src/index.ts"]

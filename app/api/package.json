@@ -27,9 +27,9 @@
     "@pinecone-database/pinecone": "^3.0.2",
     "dotenv": "^16.4.5",
     "hapi-pino": "^12.1.0",
-    "newrelic": "^12.3.0",
-    "openai": "^4.56.1",
-    "pino": "^9.3.2",
+    "newrelic": "^12.3.1",
+    "openai": "^4.58.0",
+    "pino": "^9.4.0",
     "redis": "^4.7.0"
   }
 }

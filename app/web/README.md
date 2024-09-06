@@ -4,23 +4,13 @@
 
 This is a simple chat application that allows users to interact through a chat interface. The application is built using Flask for the backend and HTML for the frontend.
 
-## Run container
+## Run
 
 > [!IMPORTANT]
-> **Recommended**  use the [`docker-compose.yml`](../docker-compose.yml) to run the service as `docker compose up web`
+> **Recommended**  use the [`docker-compose.yml`](../docker-compose.yml).
 
 ```bash
-$ docker build -t chat-web .    
-$ docker run -p 8888:8888 --env-file .env  chat-web
- * Serving Flask app 'chat_ui.py'
- * Debug mode: off
-WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
- * Running on all addresses (0.0.0.0)
- * Running on http://127.0.0.1:8888
- * Running on http://172.17.0.3:8888
-Press CTRL+C to quit
-192.168.65.1 - - [28/Aug/2024 16:09:25] "GET / HTTP/1.1" 200 -
-192.168.65.1 - - [28/Aug/2024 16:09:25] "GET /static/css/milligram.css HTTP/1.1" 200 -
+docker compose up
 ```
 
 ## Endpoints
@@ -48,4 +38,3 @@ Press CTRL+C to quit
 ## Additional Notes
 
 - Ensure that you have the `newrelic.ini` file configured if you are using New Relic for monitoring.
-- The `templates/index.html` file contains the structure and layout for the chat interface.
