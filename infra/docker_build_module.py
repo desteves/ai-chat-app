@@ -9,7 +9,7 @@ def build_push_images():
     """_summary_
     """
     # Build and push the Docker images
-    image_web = docker_build.Image(
+    docker_build.Image(
       'ai-chat-demo-web',
       context=docker_build.BuildContextArgs(
         location='../app/web',
@@ -22,7 +22,8 @@ def build_push_images():
         password=pulumi.Config().require_secret('DOCKER_PAT'),
       )]
     )
-    image_api = docker_build.Image(
+    
+    docker_build.Image(
       'ai-chat-demo-api',
       context=docker_build.BuildContextArgs(
         location='../app/api',

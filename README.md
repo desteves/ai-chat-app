@@ -1,6 +1,6 @@
 # AI Chat Application Demo
 
-Chat application that uses OpenAI + Pinecone. Monitored by New Relic. Deployed with Pulumi on AWS.
+AI Chat application that uses OpenAI + Pinecone. Monitored by New Relic. Deployed by Pulumi on AWS.
 
 ## Pre-requisites
 
@@ -12,82 +12,86 @@ Chat application that uses OpenAI + Pinecone. Monitored by New Relic. Deployed w
 
 Additional requirements:
 
-- AWS Account + credentials
-- Pulumi Cloud account
+- AWS Account + [local credentials configured](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-files.html)
+- [Pulumi Cloud account](https://app.pulumi.com/) + [Pulumi CLI](https://www.pulumi.com/docs/install/)
+
+### 1. Store app secrets in Pulumi ESC
 
 ```bash
-cd infra
-
-# log in 
-pulumi login
-
-# configure the environment once
+# store app secrets
 E=my-cool-chat-app-env
 pulumi env init $E --non-interactive
 pulumi env set  $E environmentVariables.NEW_RELIC_LICENSE_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.NRIA_LICENSE_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.OPENAI_API_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.PINECONE_API_KEY 123ABC --secret 
+```
 
-# consume in N places
-pulumi env open $E --format dotenv > ../app/.env
+### 2. Store infra secrets in Pulumi ESC
 
-# start up a venv
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-pulumi stack init dev
+Additional prerequisites:
 
-# pulumi needs credentials to your NR, Pinecone and AWS accounts
+- Create a [Pulumi Cloud access token](https://www.pulumi.com/docs/pulumi-cloud/access-management/access-tokens/) for the EC2 Instance to access your app secrets Environment. If you're on a paid tier, you can create a custom team with only read access to the app secrets environment to adhere to the principle of least privilige.🔐
+- Gather your [New Relic access details](https://www.pulumi.com/registry/packages/newrelic/installation-configuration/#configuring-credentials).
+- Create a new [Pinecone key](https://www.pulumi.com/registry/packages/pinecone/installation-configuration/#configuration). Alternatively, you can re-use the same key for the app by importing the app secrets. The latter approach is demostrated below.
+- Get a [Docker PAT](https://docs.docker.com/security/for-developers/access-tokens/) to push the docker images to your own Dockerhub registry
+
+```bash
+# store infra secrets
 C=my-cool-chat-app-provider-creds
 pulumi env init $C --non-interactive
-
-# for AWS
-# https://www.pulumi.com/registry/packages/aws-native/installation-configuration/
-# the option shown here uses your ~/.aws/credentials profile name
-# aws sso --profile work
-pulumi config set aws:profile work
-pulumi config set aws:region us-west-2
-# option to enable auth via EC2 Instance Metadata
-pulumi config set aws:skipMetadataApiCheck false
-
-# for New Relic
-# https://www.pulumi.com/registry/packages/newrelic/installation-configuration/#configuring-credentials
-pulumi env set $C pulumiConfig.newrelic:accountId 123ABC
-pulumi env set $C pulumiConfig.newrelic:apiKey 123ABC --secret
-pulumi env set $C pulumiConfig.newrelic:adminApiKey 123ABC --secret
-
-# for Pinecone
-# https://www.pulumi.com/registry/packages/pinecone/installation-configuration/#configuration
-# re-use the same key defined in ${E} by importing it
 pulumi env edit $C
-# // to the very top of the Environment add the following:
+# // to the very top of the ESC Environment add the following:
 # 
 # imports:
 #  - my-cool-chat-app-env
 # 
-# // save and exit the editor
+# // save the changes and exit.
+
+# reference the existing Pinecone key
 pulumi env set $C pulumiConfig.pinecone:APIKey \${environmentVariables.PINECONE_API_KEY}
 
-# preview infra, confirm "yes"
-# pulumi config env add $C --stack dev --yes
-# // example output
-# KEY                       VALUE
-# aws:profile               work
-# aws:region                us-west-2
-# newrelic:accountId        123ABC
-# newrelic:adminApiKey      [secret]
-# newrelic:apiKey           [secret]
-# pinecone:APIKey           [secret]
+# Enable the EC2 to access app secrets
+pulumi env set $C environmentVariables.PULUMI_TEAM_TOKEN_EC2_ESC pul-123ABC --secret
 
-# ENVIRONMENT VARIABLE   VALUE
-# NEW_RELIC_LICENSE_KEY  [secret]
-# OPENAI_API_KEY         [secret]
-# PINECONE_API_KEY       [secret]
+# New Relic
+pulumi env set $C pulumiConfig.newrelic:accountId 123456
+pulumi env set $C pulumiConfig.newrelic:apiKey 123ABC --secret
+pulumi env set $C pulumiConfig.newrelic:adminApiKey 123ABC --secret
 
-pulumi up --stack dev --yes
+# Docker
+pulumi env set $C pulumiConfig.DOCKER_PAT 123ABC --secret
+pulumi env set $C pulumiConfig.DOCKER_USR nullstring ## 🚨🚨🚨 replace with YOUR handle
 
+# Add the infra secrets environment to pulumi
+pulumi config env add $C --stack dev --yes
 ```
+
+### 3. Deploy everything 🚀
+
+```bash
+# start up a venv and install deps
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Additional AWS configurations
+# https://www.pulumi.com/registry/packages/aws-native/installation-configuration/
+# the option shown here uses your ~/.aws/credentials profile name
+# aws sso --profile work
+pulumi config set aws:profile work ## 🚨🚨🚨 replace with YOUR profile name
+pulumi config set aws:region us-west-2
+# option to enable auth via EC2 Instance Metadata
+pulumi config set aws:skipMetadataApiCheck false
+
+###
+### ARE YOU READY!?
+# Time to Deploy 
+pulumi up --stack dev --yes
+# Ta - Da! ✨🎉
+```
+
+Learn how to [configure AWS OIDC with Pulumi ESC](https://www.pulumi.com/docs/esc/providers/aws-login/) for an even more secure configuration.
 
 ## Run Locally via Docker
 
