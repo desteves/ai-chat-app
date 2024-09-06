@@ -57,9 +57,6 @@ def declare_aws_resources():
         "my-route-table-association",
         subnet_id=subnet.id,
         route_table_id=route_table.id,
-        tags={
-            'Name': 'my-cool-rta',
-        }
     )
 
     # Create a security group
@@ -144,4 +141,4 @@ def declare_aws_resources():
             depends_on=[route_table_association]),
     )
 
-    pulumi.export('url', f'http://{instance.public_ip}:80')
+    pulumi.export('url', instance.public_ip)
