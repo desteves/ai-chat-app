@@ -1,6 +1,7 @@
 """
 _summary_
 """
+import os
 import pulumi
 import pulumi_aws as aws
 
@@ -11,8 +12,8 @@ def declare_aws_resources():
     vpc = aws.ec2.Vpc(
         'my_cool_vpc',
         cidr_block='10.0.0.0/16',
-        enable_dns_hostnames= True,
-        enable_dns_support= True,
+        enable_dns_hostnames=True,
+        enable_dns_support=True,
         tags={
             'Name': 'my-cool-vpc',
         }
@@ -62,7 +63,7 @@ def declare_aws_resources():
                 'protocol': 'tcp',
                 'from_port': 22,
                 'to_port': 22,
-                'cidr_blocks': ['0.0.0.0/0'], # restrict this further
+                'cidr_blocks': ['18.237.140.160/29'], # us-west-2 restriction
             },
             {
                 'protocol': 'tcp',
@@ -80,19 +81,16 @@ def declare_aws_resources():
             }
         ],
         tags={
-            'Name': 'my-security-group',
+            'Name': 'my-cool-security-group',
         }
     )
 
-    pulumi_access_token = pulumi.Config().require_secret("PULUMI_TEAM_TOKEN_EC2_ESC")
+    pulumi_access_token = os.getenv("PULUMI_TEAM_TOKEN_EC2_ESC")
     # Create an EC2 instance
     # cat /var/log/cloud-init-output.log
     user_data = f'''#!/bin/bash
-
     # Set up dependencies
-    echo "user_data script LOG START"
-    curl --retry 5 --retry-delay 6 --max-time 30 http://us-west-2.ec2.archive.ubuntu.com:80
-
+    echo "user_data SCRIPT_LOG_START"
     sudo apt-get update -y
     sudo apt-get install -y docker.io git
     sudo systemctl start docker
@@ -103,17 +101,17 @@ def declare_aws_resources():
     # Set up the repo
     git clone https://github.com/desteves/ai-chat-app.git /home/ubuntu/repo
     cd /home/ubuntu/repo/app
-
+    
     # Set environment variables with Pulumi ESC
     curl -fsSL https://get.pulumi.com/esc/install.sh | sh
-    export PATH="$PATH:/.pulumi/bin"
     export PULUMI_ACCESS_TOKEN={pulumi_access_token}
     export PULUMI_ESC_ENV=my-cool-chat-app-env
-    esc env open $PULUMI_ESC_ENV --format dotenv > ./web/.env
-    esc env open $PULUMI_ESC_ENV --format dotenv > ./api/.env
-
+    /.pulumi/bin/esc env open $PULUMI_ESC_ENV --format dotenv > ./web/.env
+    /.pulumi/bin/esc env open $PULUMI_ESC_ENV --format dotenv > ./api/.env
+    unset PULUMI_ACCESS_TOKEN
     # Run Docker Compose
-    docker compose up --quiet-pull
+    sed -i 's/8888:/80:/g' docker-compose.yml
+    docker-compose up
     '''
 
     instance = aws.ec2.Instance(
