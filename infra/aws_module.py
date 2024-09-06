@@ -114,6 +114,7 @@ def declare_aws_resources():
     export PULUMI_ESC_ENV=my-cool-chat-app-env
     /.pulumi/bin/esc env open $PULUMI_ESC_ENV --format dotenv > ./web/.env
     /.pulumi/bin/esc env open $PULUMI_ESC_ENV --format dotenv > ./api/.env
+    /.pulumi/bin/esc env open $PULUMI_ESC_ENV --format dotenv > ./monitoring/.env
     unset PULUMI_ACCESS_TOKEN
     # Run Docker Compose
     sed -i 's/8888:/80:/g' docker-compose.yml
