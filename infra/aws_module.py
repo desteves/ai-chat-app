@@ -23,6 +23,9 @@ def declare_aws_resources():
     igw = aws.ec2.InternetGateway(
         "my_cool_igw",
         vpc_id=vpc.id,
+        tags={
+            'Name': 'my-cool-igw',
+        }
     )
 
     # Create a Route Table
@@ -33,6 +36,9 @@ def declare_aws_resources():
             'cidr_block': "0.0.0.0/0",
             'gateway_id': igw.id,
         }],
+        tags={
+            'Name': 'my-cool-routetable',
+        }
     )
 
     # Create a subnet
@@ -51,6 +57,9 @@ def declare_aws_resources():
         "my-route-table-association",
         subnet_id=subnet.id,
         route_table_id=route_table.id,
+        tags={
+            'Name': 'my-cool-rta',
+        }
     )
 
     # Create a security group
@@ -63,7 +72,7 @@ def declare_aws_resources():
                 'protocol': 'tcp',
                 'from_port': 22,
                 'to_port': 22,
-                'cidr_blocks': ['18.237.140.160/29'], # us-west-2 restriction
+                'cidr_blocks': ['18.237.140.160/29'], # us-west-2 limited
             },
             {
                 'protocol': 'tcp',
@@ -112,6 +121,7 @@ def declare_aws_resources():
     # Run Docker Compose
     sed -i 's/8888:/80:/g' docker-compose.yml
     docker-compose up
+    sudo ufw allow 80/tcp
     '''
 
     instance = aws.ec2.Instance(
@@ -134,6 +144,4 @@ def declare_aws_resources():
             depends_on=[route_table_association]),
     )
 
-    # Export the public IP address of the instance
-    # pulumi.export('public_ip', instance.public_ip)
-    pulumi.export("public_dns", instance.public_dns)
+    pulumi.export('url', f'http://{instance.public_ip}:80')

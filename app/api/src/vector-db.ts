@@ -1,6 +1,8 @@
 import { Pinecone } from "@pinecone-database/pinecone";
 import { EmbeddingService } from "./ai";
 import { assertExists } from "./utils";
+import * as fs from 'fs';
+import * as path from 'path';
 
 const gamesIndexName = "games";
 
@@ -10,7 +12,14 @@ export interface ActivityMetadata {
   name: string;
 }
 
+type Activity = {
+  name: string;
+  description: string;
+  prompt: string;
+};
+
 export class VectorDbService {
+
   static async initialize(embeddingService: EmbeddingService) {
     const client = new Pinecone({
       apiKey: assertExists(
@@ -18,6 +27,45 @@ export class VectorDbService {
         "Expected a pinecone API key"
       )
     });
+
+    const index = client.index(gamesIndexName);
+
+    const filePath = path.join(__dirname, 'activities.json');
+
+    if (index) {
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading file:', err);
+          return;
+        }
+        try {
+          // Parse the JSON data
+          const jsonArray: Activity[] = JSON.parse(data);
+
+          // Check if the parsed data is an array
+          if (Array.isArray(jsonArray)) {
+
+            jsonArray.forEach((activity: Activity) => {
+              embeddingService.createEmbedding(activity.name).then((embedding) => {
+                index.upsert([{
+                  "id": activity.name ?? "none",
+                  "values": embedding,
+                  "metadata": activity
+                }]);
+              });
+            });
+
+          } else {
+            console.error('The JSON data is not an array.');
+          }
+        } catch (parseError) {
+          console.error('Error parsing JSON:', parseError);
+        }
+
+      });
+    } else {
+      console.error('Index not found');
+    }
     return new VectorDbService(client, embeddingService);
   }
 

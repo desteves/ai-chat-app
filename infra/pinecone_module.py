@@ -1,8 +1,8 @@
 """
 _summary_
 """
-import pinecone_pulumi as pinecone
 import pulumi_aws as aws
+import pinecone_pulumi as pinecone
 
 def declare_pinecone_resources():
     """_summary_
@@ -19,3 +19,4 @@ def declare_pinecone_resources():
             ),
         ),
     )
+    
