@@ -12,30 +12,22 @@
 <body>
   <h3>My AI Bot</h3>
   <form action="/activities" method="GET">
-    <input type="submit" value="See games">
+    <nobr><input type="submit" value="Get games">{% if outputGames %}<label for="outputGames">Output:</label>
+      <div>{{ outputGames }}</div>
+    </nobr>{% endif %}
   </form>
-  {% if outputGames %}
-  <nobr><label for="outputGames">Game List:</label>
-    <div>{{ outputGames }}</div>
-  </nobr>
-  {% endif %}
   <form action="/activities/search" method="POST">
-    <label for="input">New Game:</label>
+    <label for="input">Input:</label>
     <!-- switching to textarea for wider input -->
-    <textarea placeholder="Add Your Game" name="input"></textarea>
-    <br>
-    <input type="submit" value="Add Game">
+    <textarea placeholder="Insert Your Game" name="input"></textarea>
+    <input type="submit" value="Get game prompt">
   </form>
-  {% if outputGamePrompt %}
-  <nobr><label for="outputGamePrompt">Prompt Response:</label>
-    <div>{{ outputGamePrompt }}</div>
-  </nobr>
-  {% endif %}
   <form action="/chat" method="POST">
-    <label for="prompt">Game Prompt:</label>
-    <textarea placeholder="Add Your Game Prompt" name="prompt"></textarea>
-    <br>
-    <input type="submit" value="Game prompt">
+    {% if outputGamePrompt %}
+    <textarea name="inputGamePrompt">{{outputGamePrompt}}</textarea>
+    <div>{{ outputGamePrompt }}</div>
+    {% endif %}
+    <input type="submit" value="Submit prompt">
   </form>
   {% if outputChatGuid %}
   <nobr><label for="outputChatGuid">Chat Guid:</label>
@@ -47,17 +39,15 @@
     <div>{{ outputChatContent }}</div>
   </nobr>
   {% endif %}
+  <form action="/chat/guid" method="POST">
+    <textarea placeholder="Insert Your Game Interaction" name="inputGameInteraction"></textarea>
+    <input type="submit" value="Submit game interaction">
+  </form>
   {% if outputChatInteraction %}
   <label for="outputChatInteraction">Chat Interaction:</label>
   <div>{{ outputChatInteraction }}</div>
   {% endif %}
-  <form action="/chat/guid" method="POST">
-    <label for="interaction">Game Prompt:</label>
-    <textarea placeholder="Add Your Game Interaction" name="interaction"></textarea>
-    <br>
-    <input type="submit" value="Add interaction">
-  </form>
-
+  <p><br /><br /><br /></p>
 </body>
 
 </html>

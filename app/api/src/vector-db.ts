@@ -55,6 +55,8 @@ export class VectorDbService {
               });
             });
 
+            console.log("actities.json has been updated and indexed.");
+
           } else {
             console.error('The JSON data is not an array.');
           }

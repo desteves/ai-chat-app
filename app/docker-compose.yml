@@ -4,7 +4,6 @@ version: '3'
 # OPENAI_API_KEY=sk-proj-123
 # PINECONE_API_KEY=123
 # NEW_RELIC_LICENSE_KEY=123
-# NRIA_LICENSE_KEY=123
 # See .env.example for reference
 
 services:
@@ -53,25 +52,6 @@ services:
       - chat
     ports:
       - 6379:6379
-
-  monitoring:
-    container_name: newrelic-infra
-    image: newrelic/infrastructure:latest
-    build:
-      context: ./monitoring
-      dockerfile: Dockerfile
-    cap_add:
-      - SYS_PTRACE
-    pid: host
-    privileged: true
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    restart: unless-stopped
-    networks:
-      - chat
-    env_file:
-      - ../.env
 
 networks:
   chat:
