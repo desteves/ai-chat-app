@@ -22,7 +22,7 @@ def build_push_images():
         password=pulumi.Config().require_secret('DOCKER_PAT'),
       )]
     )
-    
+
     docker_build.Image(
       'ai-chat-demo-api',
       context=docker_build.BuildContextArgs(
