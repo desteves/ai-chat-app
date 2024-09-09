@@ -80,9 +80,10 @@ def chat():
     Returns:
         None
     """
-    for key, value in request.form.items():
-        print(f"{key}: {value}")
-    input_prompt = request.form.get("prompt")
+    # for key, value in request.form.items():
+    #     print(f"{key}: {value}")
+    input_prompt = request.form.get("inputGamePrompt")
+    print(f"input_prompt: {input_prompt}")
     body = {"message": input_prompt}
     response = requests.post(url=f"{BACKEND_URL}/chat", data=body, timeout=30)
     json_object = json.loads(response.text)
@@ -105,6 +106,8 @@ def chat():
                            outputChatContent=chat_content,
                            outputGamePrompt=input_prompt)
     else:
+        print("Chat content does not exist.")
+        print(json.dumps(json_object))
         return render_template("error.html")
 
 @app.route("/chat/guid", methods=["POST"])
@@ -118,37 +121,42 @@ def chat_guid():
     Returns:
         str: A unique identifier for the chat session.
     """
-    input_prompt = request.form.get("interaction")
+    input_prompt = request.form.get("inputGameInteraction")
     body = {"message": input_prompt}
-    guid = session['guid']
+    guid = None
+    if "guid" in session:
+        guid = session["guid"]
+    else:
+        print("GUID does not exist.")
+        return render_template("error.html")
     response = requests.put(
     url=f"{BACKEND_URL}/chat/{guid}",
         data=body,
         timeout=30
     )
     json_object = json.loads(response.text)
-    result = None
-    if isinstance(json_object.get("messages"), list):
-        message_length = len(json_object["messages"])
-        # Check if there is at least one message and if the last message contains "content"
-        if message_length > 0 and isinstance(json_object["messages"][message_length - 1], dict):
-            result = json_object["messages"][message_length - 1].get("content", None)
-            if result is None:
-                return render_template("error.html")
-        else:
-            return render_template("error.html")
-    else:
-        return render_template("error.html")
+    # result = None
+    # if isinstance(json_object.get("messages"), list):
+    message_length = len(json_object["messages"])
+    #     # Check if there is at least one message and if the last message contains "content"
+    #     if message_length > 0 and isinstance(json_object["messages"][message_length - 1], dict):
+    result = json_object["messages"][message_length - 1].get("content", None)
+    #         if result is None:
+    #             return render_template("error.html")
+    #     else:
+    #         return render_template("error.html")
+    # else:
+    #     return render_template("error.html")
     # Check if session contains the required keys
-    content = session.get('chat_content', None)
-    if content is None:
-        return render_template("error.html")
-    game_input = session.get('game_input', None)
-    if game_input is None:
-        return render_template("error.html")
-    prompt = session.get('game_prompt', None)
-    if prompt is None:
-        return render_template("error.html")
+    content = session.get('chat_content', "")
+    # if content is None:
+    #     return render_template("error.html")
+    game_input = session.get('game_input', "")
+    # if game_input is None:
+    #     return render_template("error.html")
+    prompt = session.get('game_prompt', "")
+    # if prompt is None:
+    #     return render_template("error.html")
     return render_template("index.html",
                            outputChatInteraction=result,
                            outputChatGuid=guid,

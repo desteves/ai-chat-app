@@ -117,10 +117,9 @@ def declare_aws_resources():
     unset PULUMI_ACCESS_TOKEN
     
     # Run Docker Compose
-    pwd
-    sed -i 's/8888:/80:/g' docker-compose.yml
-    docker-compose up
     sudo ufw allow 80/tcp
+    sed -i 's/8888:/80:/g' docker-compose.yml
+    docker-compose up -d
     '''
 
     instance = aws.ec2.Instance(

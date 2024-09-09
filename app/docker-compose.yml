@@ -1,5 +1,3 @@
-version: '3'
-
 # Add these to your .env file
 # OPENAI_API_KEY=sk-proj-123
 # PINECONE_API_KEY=123
@@ -19,7 +17,7 @@ services:
     networks:
       - chat
     env_file:
-      - /.env
+      - .env
     environment:
       - BACKEND_URL=http://api:8081
       - WEB_PORT=8888
@@ -37,7 +35,7 @@ services:
     networks:
       - chat
     env_file:
-      - /.env
+      - .env
     environment:
       - REDIS_BASE=redis://db:6379/0
       - PINECONE_NAMESPACE=default

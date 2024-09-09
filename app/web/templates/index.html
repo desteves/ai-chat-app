@@ -24,7 +24,7 @@
   </form>
   <form action="/chat" method="POST">
     {% if outputGamePrompt %}
-    <textarea name="inputGamePrompt">{{outputGamePrompt}}</textarea>
+    <textarea name="inputGamePrompt"></textarea>
     <div>{{ outputGamePrompt }}</div>
     {% endif %}
     <input type="submit" value="Submit prompt">
