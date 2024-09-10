@@ -22,7 +22,6 @@ Additional requirements:
 E=my-cool-chat-app-env
 pulumi env init $E --non-interactive
 pulumi env set  $E environmentVariables.NEW_RELIC_LICENSE_KEY 123ABC --secret 
-pulumi env set  $E environmentVariables.NRIA_LICENSE_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.OPENAI_API_KEY 123ABC --secret 
 pulumi env set  $E environmentVariables.PINECONE_API_KEY 123ABC --secret 
 ```
